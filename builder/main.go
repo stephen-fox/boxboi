@@ -78,6 +78,16 @@ func mainWithError() error {
 		return err
 	}
 
+	err = os.WriteFile("build/flash", ct.Bytes(), 0o666)
+	if err != nil {
+		return err
+	}
+
+	err = os.Chmod("build/flash", 0o666)
+	if err != nil {
+		return err
+	}
+
 	err = os.WriteFile("build/flash.backup", ct.Bytes(), 0o600)
 	if err != nil {
 		return err
