@@ -91,8 +91,7 @@ func handleClient(ctx context.Context, conn net.Conn) error {
 > exit  - disconnect
 > help  - show this information
 > on    - boot boxboi
-> off   - turn boxboi off
-> reset - reset the challenge to its original state (if something got broke)`
+> off   - turn boxboi off`
 
 	// write is a helper function for writing messages to
 	// a connected user.
@@ -156,17 +155,6 @@ func handleClient(ctx context.Context, conn net.Conn) error {
 			if err != nil {
 				return err
 			}
-		case "reset":
-			err := resetChallenge()
-			if err != nil {
-				_ = write("failed to reset challenge - " +
-					err.Error())
-				return err
-			} else {
-				_ = write("challenge has been reset - " +
-					"please reconnect")
-				return nil
-			}
 		default:
 			err = write("unknown command")
 			if err != nil {
@@ -205,24 +193,4 @@ func powerOn(ctx context.Context, conn io.ReadWriter) (*exec.Cmd, error) {
 	}
 
 	return kernel, nil
-}
-
-func resetChallenge() error {
-	backup, err := os.ReadFile("./flash.backup")
-	if err != nil {
-		return fmt.Errorf("failed to open flash backup - %w", err)
-	}
-
-	err = os.WriteFile("./flash", backup, 0o666)
-	if err != nil {
-		return fmt.Errorf("failed to overwrite flash with backup - %w",
-			err)
-	}
-
-	err = os.Chmod("./flash", 0o666)
-	if err != nil {
-		return fmt.Errorf("failed to chmod flash - %w", err)
-	}
-
-	return nil
 }
