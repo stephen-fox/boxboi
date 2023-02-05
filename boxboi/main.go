@@ -100,7 +100,11 @@ func handleClient(ctx context.Context, conn net.Conn) error {
 		return err
 	}
 
-	var err error
+	err := write("welcome to boxboi - run 'help' for help")
+	if err != nil {
+		return err
+	}
+
 	var kernel *exec.Cmd
 	defer func() {
 		if kernel != nil {
