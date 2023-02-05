@@ -37,15 +37,15 @@ func mainWithError() error {
 		return err
 	}
 
-	pt, err := io.ReadAll(os.Stdin)
+	plaintext, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		return err
 	}
 
-	ct := make([]byte, len(pt))
+	ciphertext := make([]byte, len(plaintext))
 
-	rc4Cipher.XORKeyStream(ct, pt)
+	rc4Cipher.XORKeyStream(ciphertext, plaintext)
 
-	_, err = os.Stdout.Write(ct)
+	_, err = os.Stdout.Write(ciphertext)
 	return err
 }
