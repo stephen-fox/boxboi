@@ -26,7 +26,7 @@ func mainWithError() error {
 		os.Interrupt)
 	defer cancelFn()
 
-	err := os.MkdirAll("build", 0o700)
+	err := os.MkdirAll("build", 0o755)
 	if err != nil {
 		return err
 	}
