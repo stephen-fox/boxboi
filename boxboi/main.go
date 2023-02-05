@@ -11,6 +11,10 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"os/signal"
+	"path/filepath"
+
+	"gitlab.com/stephen-fox/boxboi/internal/osspecific"
 )
 
 func main() {
@@ -23,9 +27,19 @@ func main() {
 }
 
 func mainWithError() error {
-	err := resetChallenge()
+	ctx, cancelFn := signal.NotifyContext(context.Background(),
+		osspecific.QuitSignals()...)
+	defer cancelFn()
+
+	exePath, err := os.Executable()
 	if err != nil {
-		return fmt.Errorf("failed to reset challenge - %w", err)
+		return fmt.Errorf("failed to get exe path - %s", err)
+	}
+
+	err = os.Chdir(filepath.Dir(exePath))
+	if err != nil {
+		return fmt.Errorf("failed to chdir to exe parent dir - %w",
+			err)
 	}
 
 	listener, err := net.Listen("tcp", "127.0.0.1:3249")
@@ -34,28 +48,38 @@ func mainWithError() error {
 	}
 	defer listener.Close()
 
-	var cancelCurrentClientFn func()
-	defer func() {
-		if cancelCurrentClientFn != nil {
-			cancelCurrentClientFn()
+	errs := make(chan error, 1)
+	go func() {
+		var cancelCurrentClientFn func()
+		defer func() {
+			if cancelCurrentClientFn != nil {
+				cancelCurrentClientFn()
+			}
+		}()
+
+		for {
+			conn, err := listener.Accept()
+			if err != nil {
+				errs <- err
+				return
+			}
+
+			if cancelCurrentClientFn != nil {
+				cancelCurrentClientFn()
+			}
+
+			var clientCtx context.Context
+			clientCtx, cancelCurrentClientFn = context.WithCancel(ctx)
+
+			go handleClient(clientCtx, conn)
 		}
 	}()
 
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			return err
-		}
-
-		if cancelCurrentClientFn != nil {
-			cancelCurrentClientFn()
-		}
-
-		var clientCtx context.Context
-		clientCtx, cancelCurrentClientFn = context.WithCancel(
-			context.Background())
-
-		go handleClient(clientCtx, conn)
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case err := <-errs:
+		return err
 	}
 }
 
