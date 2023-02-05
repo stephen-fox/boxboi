@@ -101,8 +101,21 @@ func goBuild(ctx context.Context, filePath string, outputPath string) error {
 		"go", "build", "-o", outputPath, filePath)
 	goBuild.Stderr = os.Stderr
 	goBuild.Stdout = os.Stdout
+	goBuild.Env = os.Environ()
 
-	log.Printf("executing: '%s'...", goBuild.String())
+	if targetOS := os.Getenv("_GOOS"); targetOS != "" {
+		goBuild.Env = append(goBuild.Env, "GOOS="+targetOS)
+		log.Printf("[build %s]: GOOS set to '%s'",
+			filePath, targetOS)
+	}
+
+	if targetArch := os.Getenv("_GOARCH"); targetArch != "" {
+		goBuild.Env = append(goBuild.Env, "GOARCH="+targetArch)
+		log.Printf("[build %s]: GOARCH set to '%s'",
+			filePath, targetArch)
+	}
+
+	log.Printf("[build %s]: exec: '%s'", filePath, goBuild.String())
 
 	return goBuild.Run()
 }
