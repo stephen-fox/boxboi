@@ -26,7 +26,7 @@ func mainWithError() error {
 		os.Interrupt)
 	defer cancelFn()
 
-	err := os.MkdirAll("build", 0o755)
+	err := os.MkdirAll("build", 0755)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func mainWithError() error {
 
 	keyHexStr := hex.EncodeToString(key)
 
-	err = os.WriteFile("secretrom/key_hex", []byte(keyHexStr), 0o600)
+	err = os.WriteFile("secretrom/key_hex", []byte(keyHexStr), 0600)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func mainWithError() error {
 	err = os.WriteFile(
 		"secretrom/last_four_bytes_hex",
 		[]byte(lastFourBytesHexStr),
-		0o600)
+		0600)
 	if err != nil {
 		return err
 	}
@@ -78,17 +78,17 @@ func mainWithError() error {
 		return err
 	}
 
-	err = os.WriteFile("build/flash", ct.Bytes(), 0o666)
+	err = os.WriteFile("build/flash", ct.Bytes(), 0666)
 	if err != nil {
 		return err
 	}
 
-	err = os.Chmod("build/flash", 0o666)
+	err = os.Chmod("build/flash", 0666)
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile("build/flash.backup", ct.Bytes(), 0o600)
+	err = os.WriteFile("build/flash.backup", ct.Bytes(), 0600)
 	if err != nil {
 		return err
 	}
