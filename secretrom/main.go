@@ -55,7 +55,7 @@ func mainWithError() error {
 		return errors.New("flash is less than four bytes")
 	}
 
-	flashPlaintext := make([]byte, len(flashCiphertext))
+	flashPlaintext := make([]byte, flashLen)
 
 	rc4Cipher.XORKeyStream(flashPlaintext, flashCiphertext)
 
