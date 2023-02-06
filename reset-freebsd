@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# Reset script for use with "ctf" application on FreeBSD systems.
+
+die() {
+  echo "error: ${@}" 1>&2
+  exit 1
+}
+
+set -u
+
+if [ -f "${CTF_PID_FILE}" ]
+then
+  pid=$(/bin/cat "${CTF_PID_FILE}")
+  [ -n "${pid}" ] && /bin/kill -9 "${pid}"
+fi
+
+tarFile="${CTF_DATA_DIR}/boxboi.tar.gz"
+
+if [ ! -f "${tarFile}" ]
+then
+  die "boxboi tar file is missing"
+fi
+
+if ! /usr/bin/tar \
+  -C "${CTF_DIR}" \
+  -xzvf "${tarFile}" \
+  --no-same-owner \
+  --strip-components=1
+then
+  die "failed to untar boxboi"
+fi
+
+if ! /usr/sbin/daemon \
+  -p "${CTF_PID_FILE}" \
+  -o "${CTF_LOG_FILE}" \
+  -- "${CTF_DIR}/boxboi"
+then
+  die "failed to daemonize boxboi"
+fi
