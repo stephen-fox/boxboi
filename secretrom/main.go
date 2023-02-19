@@ -74,7 +74,7 @@ func mainWithError() error {
 		return fmt.Errorf("failed to write kern to tmp file - %w", err)
 	}
 
-	err = kernelExe.Chmod(0700)
+	err = kernelExe.Chmod(0744)
 	if err != nil {
 		return fmt.Errorf("failed to chmod kernel - %w", err)
 	}
