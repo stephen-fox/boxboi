@@ -88,11 +88,6 @@ func mainWithError() error {
 		return err
 	}
 
-	err = os.WriteFile("build/flash.backup", ct.Bytes(), 0600)
-	if err != nil {
-		return err
-	}
-
 	err = goBuild(ctx, "secretrom/main.go", "build/secretrom")
 	if err != nil {
 		return err
