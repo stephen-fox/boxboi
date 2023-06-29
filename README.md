@@ -35,6 +35,9 @@ boxboi can be built using the `builder` program. This will create a directory
 named `build` which can then placed into a CTF environment:
 
 ```sh
+# Optionally set the target OS and CPU archiecture using '_GOX':
+# export _GOOS=freebsd
+# export _GOARCH=amd64
 go run builder/main.go
 ```
 
