@@ -1,4 +1,6 @@
 // The entrypoint for boxboi :)
+//
+// Refer to the "builder" application for details on building boxboi.
 package main
 
 import (
