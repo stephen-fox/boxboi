@@ -17,7 +17,7 @@ Pay close attention to terminology used in the source code. There are direct
 references to Michael's presentation which will guide you along.
 
 Players can connect to boxboi by first SSH'ing to a virtual machine.
-From there, user's can reach boxboi's UI via loopback at TCP port 3249:
+From there, users can reach boxboi's UI via loopback at TCP port 3249:
 
 ```sh
 nc 127.0.0.1 3249
